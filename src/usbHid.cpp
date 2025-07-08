@@ -1,9 +1,11 @@
 #include "usbHid.h"
+#include "trackball.h"
 
 USBHIDMouse mouse;
 USBHIDKeyboard keyboard;
 
 void handleUsbMode(bool mouseMode) {
+    trackballMouse();
     if (mouseMode) {
         usbMouse();
     } else  {
@@ -11,6 +13,29 @@ void handleUsbMode(bool mouseMode) {
     }
     delay(5);
 }
+
+void trackballMouse() {
+    mouse.begin();
+    int moveX = 0;
+    int moveY = 0;
+    int mouseSpeed = 4;
+
+    if (trackball.changed()) {
+        moveX = (trackball.right() - trackball.left()) * mouseSpeed;
+        moveY = (trackball.down() - trackball.up()) * mouseSpeed;
+
+        if(trackball.click()) {
+            mouse.press(MOUSE_BUTTON_LEFT);
+        }
+        else if(trackball.release()) {
+            mouse.release(MOUSE_BUTTON_LEFT);
+        }
+
+        mouse.move(moveX, moveY);
+    }
+}
+
+
 void usbMouse() {
     mouse.begin();
     int moveX = 0;

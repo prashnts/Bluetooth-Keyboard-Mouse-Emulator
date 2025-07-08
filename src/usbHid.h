@@ -8,5 +8,5 @@
 void usbMouse();
 void usbKeyboard();
 void handleUsbMode(bool mouseMode);
-
+void trackballMouse();
 #endif

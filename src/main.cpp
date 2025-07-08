@@ -3,8 +3,10 @@
 #include "display.h"
 #include "usbHid.h"
 #include <USB.h>
+#include "trackball.h"
+#include <Wire.h>
 
-bool mouseMode = true;
+bool mouseMode = false;
 bool usbMode = true;
 bool lastBluetoothStatus = false;
 
@@ -40,9 +42,12 @@ void setup() {
     // Initialisation du M5Cardputer
     auto cfg = M5.config();
     M5Cardputer.begin(cfg, true);
+    Wire.begin(1, 2);
     
     setupDisplay();
     displayWelcomeScreen();
+    trackball.begin();
+    trackball.setRed(255);
 
     selectMode();
     if (usbMode) {
