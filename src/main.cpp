@@ -69,17 +69,9 @@ void loop() {
         lastBluetoothStatus = bluetoothStatus;
     }
 
-    // Switch between keyboard/mouse
-    if (M5Cardputer.BtnA.isPressed()) {
-        mouseMode = !mouseMode;
-        drawDeviceRect(mouseMode);
-        delay(200);
-    }
-
     if (usbMode) {
         handleUsbMode(mouseMode);
     } else {
         handleBluetoothMode(mouseMode);
     }
-
 }

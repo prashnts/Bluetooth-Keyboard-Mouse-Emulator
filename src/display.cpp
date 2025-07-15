@@ -85,11 +85,13 @@ void displayWelcomeScreen() {
     M5Cardputer.Display.setTextSize(2);
     M5Cardputer.Display.printf("M5-Keyboard-Mouse");
 
-    M5Cardputer.Display.setCursor(70, 120);
+    M5Cardputer.Display.setCursor(70, 110);
     M5Cardputer.Display.setTextSize(1);
     M5Cardputer.Display.printf("Version 1.1 - Geo"); 
+    M5Cardputer.Display.setCursor(70, 120);
+    M5Cardputer.Display.printf("Version 2.0 - prashnts"); 
 
-    delay(2000);
+    delay(800);
 }
 
 void displayMainScreen(bool usbMode, bool mouseMode, bool bluetoothStatus) {

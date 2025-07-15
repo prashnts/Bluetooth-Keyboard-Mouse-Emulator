@@ -1,6 +1,7 @@
 
 
 #include "bluetooth.h"
+#include "trackball.h"
 
 BLEHIDDevice* hid;
 BLECharacteristic* mouseInput;
@@ -18,44 +19,43 @@ void MyBLEServerCallbacks::onDisconnect(BLEServer* pServer, esp_ble_gatts_cb_par
     pServer->startAdvertising();  // Start advertising making device discoverable
 }
 
-bool getBluetoothStatus() {
+bool getBluetoothStatus() { 
     return  bluetoothIsConnected;
 }
 
 void bluetoothMouse() {
     int16_t x = 0;         // Déplacement en X
     int16_t y = 0;         // Déplacement en Y
+    int16_t scroll_x = 0;  // Défilement horizontal
+    int16_t scroll_y = 0;  // Défilement vertical 
     uint8_t buttons = 0;   // Boutons de la souris
 
-    Keyboard_Class::KeysState status = M5Cardputer.Keyboard.keysState();
+    bool isScrolling = M5Cardputer.Keyboard.isPressed() && M5Cardputer.Keyboard.isKeyPressed(KEY_LEFT_CTRL);
 
-    // Bouton gauche
-    if (status.enter) {
-        buttons |= 0x01;
-    }
-    // Bouton droit
-    if (M5Cardputer.Keyboard.isKeyPressed('\\')) {
+    int speed = isScrolling ? 1 : 4;
+
+    int ax = (trackball.left() - trackball.right()) * speed;
+    int ay = (trackball.up() - trackball.down()) * speed;
+
+    if (M5Cardputer.BtnA.isPressed()) {
+        // Bouton droit
         buttons |= 0x02;
-    }
-
-    // Vertical
-    if (M5Cardputer.Keyboard.isKeyPressed(';')) {
-        y -= 1;
-    }
-    else if (M5Cardputer.Keyboard.isKeyPressed('.')) {
-        y += 1;
-    }
-
-    // Horizontal
-    if (M5Cardputer.Keyboard.isKeyPressed('/')) {
-        x += 1;
-    }
-    else if (M5Cardputer.Keyboard.isKeyPressed(',')) {
-        x -= 1;
+    } else if (trackball.changed()) {
+        if (isScrolling) {
+            scroll_x = ax;
+            scroll_y = ay;
+        } else {
+            x = ax;
+            y = ay;
+        }
+        if (trackball.click()) {
+            // Bouton gauche
+            buttons |= 0x01;
+        }
     }
 
     // Send
-    uint8_t report[4] = {buttons, (uint8_t)x, (uint8_t)y, 0};
+    uint8_t report[5] = {buttons, (uint8_t)x, (uint8_t)y, (uint8_t)scroll_x, (uint8_t)scroll_y};
     mouseInput->setValue(report, sizeof(report));
     mouseInput->notify();
 }
@@ -107,13 +107,9 @@ void sendEmptyReports() {
 void handleBluetoothMode(bool mouseMode) {
     if (bluetoothIsConnected) {
         if (M5Cardputer.Keyboard.isPressed()) {
-            if (mouseMode) {
-                bluetoothMouse();
-            } else {
-                bluetoothKeyboard();
-            }
+            bluetoothKeyboard();
         } else {
-            sendEmptyReports();
+            bluetoothMouse();
         }
     }
     delay(7);
