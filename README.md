@@ -2,6 +2,19 @@
 
 This project implements a USB HID and a BLE HID device using the M5Cardputer, capable of emulating both a keyboard and a mouse. The device can switch between mouse and keyboard modes, sending the appropriate input data to a connected USB/BLE device.
 
+# This fork
+
+- Added an i2c Trackball from Pimoroni.
+- Left click by pressing the ball, right click through either fn+click or G0 btn.
+- Scroll horizontally/vertically by tracking while holding fn key.
+- opt key is mapped to LeftGUI key (i.e Command ⌘ or Windows).
+- Handle and correctly send the arrows, and esc keycodes.
+
+To-do:
+- Update the display graphics for cues on the key combo
+- Update bluetooth le HID
+
+
 ## Key Features
 
 - <b>Mouse and Keyboard Emulation:</b> The device can function as either a mouse or a keyboard, sending the corresponding input data via BLE.
